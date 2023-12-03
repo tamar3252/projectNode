@@ -1,13 +1,15 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
-//לעשות סיגנ אפ- להתנתק, וגם אופציה למחוק משתמש למשתמש עצמו וגם אולי לאדמין)
 const router = express.Router();
-const { UserModel, validUser, validLogin, createToken } = require('../models/userModel');
+
+const {UserModel,validUser,validLogin,createToken} =require('../models/userModel')
 const { authUser, authAdmin } = require('../middleware/auth');
 
-router.get('/', (req, res) => {
-    res.json({ msg: "users"})
+
+router.get('/',(req,res)=>{
+    res.json({msg:"Rest api work!"})
 })
+
 
 //sign up
 router.post('/', async (req, res) => {

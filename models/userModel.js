@@ -1,7 +1,5 @@
 const mongoose = require("mongoose");
-//for validate
 const Joi = require("joi");
-//for token
 const jwt = require("jsonwebtoken");
 const { config } = require("../config/config")
 

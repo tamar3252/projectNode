@@ -16,7 +16,6 @@ exports.authUser = (req,res,next) => {
   }
 }
 
-
 exports.authAdmin = (req,res,next) => {
   let token = req.header("x-api-key");
   if(!token){
