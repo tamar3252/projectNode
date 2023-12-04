@@ -21,7 +21,7 @@ router.get('/', async (req, res) => {
 
 router.get('/search', async (req, res) => {
     let perPage = 10;
-    let page = req.query.page /*|| 1*/;
+    let page = req.query.page ;
     let toyName = req.query.name;
     let toyInfo = req.query.info;
     try {
@@ -79,13 +79,13 @@ router.post('/', authUser, async (req, res) => {
 router.put('/:editId', authUser, async (req, res) => {
     let validateToy = validToy(req.body);
     if (validateToy.error) {
-        return res.status(400).json(validateUser.error.details);
+        return res.status(400).json(validateToy.error.details);
     }
     let toyId = req.params.editId;
     console.log(toyId);
     try {
         let toy = await ToyModel.updateOne({ user_id: req.tokenData._id, _id: toyId }, req.body);
-        if (toy.modifiedCount == 0) {//לבדוק גם פה מה הסיבה
+        if (toy.modifiedCount == 0) {
             res.status(500).send({ msg: "you cant edit this item" });
         }
         res.status(200).send(toy);
@@ -97,7 +97,7 @@ router.put('/:editId', authUser, async (req, res) => {
 
 router.delete('/:delId', authUser, async (req, res) => {
     let toyId = req.params.delId;
-    try {//להוסיף בדיקה אם זה בגלל שהמוצר לר קיים או בגלל שהוא לא יצר אותו
+    try {
         let toy = await ToyModel.deleteOne({ user_id: req.tokenData._id, _id: toyId });
         if (toy.deletedCount == 0) {
             res.status(500).send({ msg: "you cant delete this item" });

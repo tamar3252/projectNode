@@ -76,5 +76,35 @@ router.get('/allUsersDetails',authAdmin,async(req,res)=>{
         res.status(500).json(err)
     }
 })
+router.put('/', authUser, async (req, res) => {
+    let validateUser = validUser(req.body);
+    if (validateUser.error) {
+        return res.status(400).json(validateUser.error.details);
+    }
+    try {
+        let user = await UserModel.updateOne({ _id: req.tokenData._id }, req.body);
+        if (user.modifiedCount == 0) {
+            res.status(500).send({ msg: "you cant edit this user" });
+        }
+        res.status(200).send(user);
+    }
+    catch (err) {
+        res.status(500).json({ msg: "err", err })
+    }
+})
+
+router.delete('/:delId', authAdmin, async (req, res) => {
+    let userId = req.params.delId;
+    try {
+        let user = await UserModel.deleteOne({ _id: userId });
+        if (user.deletedCount == 0) {
+            res.status(500).send({ msg: "you cant delete user" });
+        }
+        res.status(200).send(user);
+    }
+    catch (err) {
+        res.status(500).json({ msg: "err", err })
+    }
+})
 
 module.exports = router;
