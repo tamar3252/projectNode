@@ -2,12 +2,12 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const router = express.Router();
 
-const {UserModel,validUser,validLogin,createToken} =require('../models/userModel')
+const { UserModel, validUser, validLogin, createToken } = require('../models/userModel')
 const { authUser, authAdmin } = require('../middleware/auth');
 
 
-router.get('/',(req,res)=>{
-    res.json({msg:"Rest api work!"})
+router.get('/', (req, res) => {
+    res.json({ msg: "Rest api work!" })
 })
 
 
@@ -39,11 +39,11 @@ router.post('/login', async (req, res) => {
         return res.status(400).json(validateLogin.error.details[0].message);
     }
     try {
-        let user = await UserModel.findOne({email:req.body.email})
+        let user = await UserModel.findOne({ email: req.body.email })
         if (!user) {
             return res.status(401).json({ msg: "Password or email is worng" })
         }
-        let authPassword = await bcrypt.compare(req.body.password,user.password)
+        let authPassword = await bcrypt.compare(req.body.password, user.password)
         if (!authPassword) {
             return res.status(401).json({ msg: "Password or email is worng" })
         }
@@ -56,33 +56,37 @@ router.post('/login', async (req, res) => {
 })
 
 
-router.get('/myDetails',authUser,async(req,res)=>{
+router.get('/myDetails', authUser, async (req, res) => {
     try {
-        let userDetails=await UserModel.findOne({_id:req.tokenData._id},{password:0})
+        let userDetails = await UserModel.findOne({ _id: req.tokenData._id }, { password: 0 })
         res.json(userDetails)
-    } 
+    }
     catch (err) {
         res.status(500).json(err)
     }
 })
 
 //for admin
-router.get('/allUsersDetails',authAdmin,async(req,res)=>{
+router.get('/allUsersDetails', authAdmin, async (req, res) => {
     try {
-        let allUsersDetails=await UserModel.find({},{password:0})
+        let allUsersDetails = await UserModel.find({}, { password: 0 })
         res.json(allUsersDetails)
-    } 
+    }
     catch (err) {
         res.status(500).json(err)
     }
 })
+
 router.put('/', authUser, async (req, res) => {
     let validateUser = validUser(req.body);
     if (validateUser.error) {
         return res.status(400).json(validateUser.error.details);
     }
     try {
-        let user = await UserModel.updateOne({ _id: req.tokenData._id }, req.body);
+        let user = req.body;
+        user.password = await bcrypt.hash(user.password, 10);
+        user = await UserModel.updateOne({ _id: req.tokenData._id }, user);
+        user.password = "***";
         if (user.modifiedCount == 0) {
             res.status(500).send({ msg: "you cant edit this user" });
         }
