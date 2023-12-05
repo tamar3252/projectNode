@@ -63,7 +63,7 @@ router.get('/search/:category_name', async (req, res) => {
 router.post('/', authUser, async (req, res) => {
     let validateToy = validToy(req.body);
     if (validateToy.error) {
-        return res.status(400).json(validateUser.error.details);
+        return res.status(400).json(validateToy.error.details);
     }
     try {
         let toy = await new ToyModel(req.body);
